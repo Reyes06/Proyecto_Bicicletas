@@ -1,0 +1,15 @@
+extends ../layout
+
+block content
+  table.table
+    thead
+      tr
+        th(scope='col') Id
+        th(scope='col') Modelo
+        th(scope='col') Color
+    tbody
+      each bici in bicis
+        tr
+          th(scope='row') #{bici.id}
+          td  #{bici.modelo}
+          td  #{bici.color}
