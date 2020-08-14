@@ -9,24 +9,20 @@ const schemaBicicleta = new mongoose.Schema(
     }
 );
 
-schemaBicicleta.methods.toString = function () {
-    return `code: ${this.code} | color: ${this.color}`;
+schemaBicicleta.statics.allBicis = async function () {
+    return await this.find({}, (err) => {if(err) console.log(err)});
 }
 
-schemaBicicleta.statics.allBicis = function (callback) {
-    return this.find({}, callback);
+schemaBicicleta.statics.add = async function (newBici) {
+    return await this.create(newBici, (err) => {if(err) console.log(err)});
 }
 
-schemaBicicleta.statics.add = function (newBici, callback) {
-    this.create(newBici, callback);
+schemaBicicleta.statics.findByCode = async function (codigo) {
+    return await this.findOne({code: codigo}, (err) => {if(err) console.log(err)});
 }
 
-schemaBicicleta.statics.findByCode = function (codigo, callback) {
-    this.findOne({code: codigo}, callback);
-}
-
-schemaBicicleta.statics.removeByCode = function (codigo, callback) {
-    this.deleteOne({code: codigo}, callback);
+schemaBicicleta.statics.removeByCode = async function (codigo) {
+    return await this.deleteOne({code: codigo}, (err) => {if(err) console.log(err)});
 }
 
 schemaBicicleta.statics.createInstance = function (code, modelo, color, ubicacion){
@@ -37,7 +33,5 @@ schemaBicicleta.statics.createInstance = function (code, modelo, color, ubicacio
         ubicacion: ubicacion
     });
 }
-
-
 
 module.exports = mongoose.model('Bicicleta', schemaBicicleta);

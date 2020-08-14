@@ -31,61 +31,50 @@ describe('Bicicleta.createInstance', () => {
 })
 
 describe('Bicicleta.allBicis', () => {
-    it('Verificar que venga vacia', (done) => {
-        Bicicleta.allBicis( (err, bicis) => {
-            expect(bicis.length).toBe(0);
-            done();
-        });
+    it('Verificar que venga vacia', async () => {
+        let bicis = await Bicicleta.allBicis();
+        expect(bicis.length).toBe(0);
     })
 })
 
 describe('Bicicleta.add', () => {
-    it('Agrega una bicicleta', (done) => {
+    it('Agrega una bicicleta', async () => {
 
         const newBici = new Bicicleta({code: 1, color: "verde", modelo: "urbana", ubicacion: [3,4]});
-        Bicicleta.add(newBici, (err, newBici) => {
+        await Bicicleta.add(newBici);
+        let bicis = await Bicicleta.allBicis();
 
-
-            if(err) console.log(err);
-            Bicicleta.allBicis( (err, bicis) => {
-                expect(bicis.length).toBe(1);
-                expect(bicis[0].code).toBe(1);
-                expect(bicis[0].color).toBe('verde');
-                expect(bicis[0].modelo).toBe('urbana');
-                expect(bicis[0].ubicacion[0]).toBe(3);
-                expect(bicis[0].ubicacion[1]).toBe(4);
-                done();
-            })
-
-        })
+        expect(bicis.length).toBe(1);
+        expect(bicis[0].code).toBe(1);
+        expect(bicis[0].color).toBe('verde');
+        expect(bicis[0].modelo).toBe('urbana');
+        expect(bicis[0].ubicacion[0]).toBe(3);
+        expect(bicis[0].ubicacion[1]).toBe(4);
     })
 })
 
 describe('Bicicleta.findByCode', () => {
-    it('Agregar una bicicleta', (done) => {
+    it('Agregar una bicicleta', async () => {
+        
         let bici1 = new Bicicleta( {code: 1, modelo: 'abc', color: 'def', ubicacion: [3,4]});
-        Bicicleta.add(bici1, (err, bici1) => {
-            let bici2 = new Bicicleta( {code: 2, modelo: 'cba', color: 'fed', ubicacion: [4,3]});
-            Bicicleta.add(bici2, (err, bici1) => {
-                Bicicleta.findByCode(1, (err, bici) => {
-                    expect(bici.code).toBe(1);
-                    expect(bici.modelo).toBe('abc');
-                    expect(bici.color).toBe('def');
-                    expect(bici.ubicacion[0]).toBe(3);
-                    expect(bici.ubicacion[1]).toBe(4);
-                })
+        await Bicicleta.add(bici1);
+        let bici2 = new Bicicleta( {code: 2, modelo: 'cba', color: 'fed', ubicacion: [4,3]});
+        await Bicicleta.add(bici2);
 
-                Bicicleta.findByCode(2, (err, bici) => {
-                    expect(bici.code).toBe(2);
-                    expect(bici.modelo).toBe('cba');
-                    expect(bici.color).toBe('fed');
-                    expect(bici.ubicacion[0]).toBe(4);
-                    expect(bici.ubicacion[1]).toBe(3);
-                    done();
-                })
+        let bici3 = await Bicicleta.findByCode(1);
 
-                done();
-            })
-        })
+        expect(bici3.code).toBe(1);
+        expect(bici3.modelo).toBe('abc');
+        expect(bici3.color).toBe('def');
+        expect(bici3.ubicacion[0]).toBe(3);
+        expect(bici3.ubicacion[1]).toBe(4);
+
+        let bici4 = await Bicicleta.findByCode(2);
+
+        expect(bici4.code).toBe(2);
+        expect(bici4.modelo).toBe('cba');
+        expect(bici4.color).toBe('fed');
+        expect(bici4.ubicacion[0]).toBe(4);
+        expect(bici4.ubicacion[1]).toBe(3);
     })
 })
