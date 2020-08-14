@@ -1,15 +1,29 @@
-class Bicicleta {
-    constructor (id, modelo, color){
-        this.id = id;
-        this.modelo = modelo;
-        this.color = color;
+
+const mongoose = require('mongoose');
+const schemaBicicleta = new mongoose.Schema(
+    {
+        code: int,
+        modelo: string,
+        color: string,
+        ubicacion: [number]
     }
+);
+
+schemaBicicleta.methods.toString = function () {
+    return `code: ${this.code} | color: ${this.color}`;
 }
 
-let b1 = new Bicicleta(123, 'Hyuga', 'Azul')
-let b2 = new Bicicleta(512, 'Uchiha', 'Rojo')
-let b3 = new Bicicleta(443, 'Senju', 'Cafe')
+schemaBicicleta.statics.allBicis = function (callback) {
+    return this.find({}, callback);
+}
 
-let bicicletas = [b1,b2,b3];
+schemaBicicleta.statics.createInstance = function (code, modelo, color, ubicacion){
+    return new this ({
+        code: code,
+        modelo: modelo,
+        color: color,
+        ubicacion: ubicacion
+    });
+}
 
-module.exports = bicicletas;
+module.exports = mongoose.model('Bicicleta', schemaBicicleta);

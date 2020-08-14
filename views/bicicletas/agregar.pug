@@ -1,0 +1,14 @@
+extends ../layout
+
+block content
+    form(action="/bicicletas/agregar", method="post")
+        label(for="id") ID
+        input#id(type="text", name="id")
+        <br>
+        label(for="modelo") MODELO
+        input#modelo(type="text", name="modelo")
+        <br>
+        label(for="color") COLOR
+        input#color(type="text", name="color")
+        <br>
+        input.btn(type="submit", value="OK")
