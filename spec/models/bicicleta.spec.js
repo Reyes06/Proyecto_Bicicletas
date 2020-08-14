@@ -1,78 +1,91 @@
-let bicicletas = require('../../models/listado_bicicletas');
+const mongoose = require('mongoose');
 let Bicicleta = require('../../models/bicicleta');
 
-beforeEach(() => {
-    bicicletas = [];
-})
+beforeAll( (done) => {
+    mongoose.connect('mongodb://localhost/red_bicicletas', {useNewUrlParser: true, useUnifiedTopology: true});
+    var db = mongoose.connection;
+    db.on('error', console.error.bind(console, 'MongoDB ERROR'));
+    db.on('open', () => {
+        console.log('MongoDB OK'); 
+        done();
+    });
+});
 
-describe('Bicicletas.init', () => {
-    it('Verificar 0 bicicletas al inicio', () => {
-        expect(bicicletas.length).toBe(0);
-    })
-})
-
-describe('Bicicletas.add', () => {
-    it('Verificar agregar una bicicleta', () => {
-        
-        let b1 = new Bicicleta(512, 'Uchiha', 'Rojo', [14.610670, -90.656444]);
-        let b2 = new Bicicleta(443,'Senju', 'Cafe', [14.613317, -90.658064]);
-
-        bicicletas.push(b1);
-
-        expect(bicicletas.length).toBe(1);
-        expect(bicicletas[0].id).toBe(b1.id);
-        expect(bicicletas[0].color).toBe(b1.color);
-        expect(bicicletas[0].modelo).toBe(b1.modelo);
-        expect(bicicletas[0].coordenadas).toBe(b1.coordenadas);
-
-        bicicletas.push(b2);
-
-        expect(bicicletas.length).toBe(2);
-        expect(bicicletas[1].id).toBe(b2.id);
-        expect(bicicletas[1].color).toBe(b2.color);
-        expect(bicicletas[1].modelo).toBe(b2.modelo);
-        expect(bicicletas[1].coordenadas).toBe(b2.coordenadas);
+afterEach ( (done) => {
+    Bicicleta.deleteMany({}, (err, success) => {
+        if(err) console.log(err);
+        done();
     })
 });
 
-describe('Bicicletas.delete', () => {
+describe('Bicicleta.createInstance', () => {
+    it('Crear una instancia de bicicleta', () => {
+        let nuevaInstancia = Bicicleta.createInstance(1, 'modelo', 'color', [12, 23]);
 
-    it('Verificar eliminacion al principio/centro/final', () => {
-        let b1 = new Bicicleta(123, 'm1', 'c1', [14.610670, -90.656444]);
-        let b2 = new Bicicleta(456,'m2', 'c2', [14.613317, -90.658064]);
-        let b3 = new Bicicleta(789, 'm3', 'c3', [14.610670, -90.656444]);
-        let b4 = new Bicicleta(987,'m4', 'c4', [14.613317, -90.658064]);
-
-        bicicletas.push(b1);
-        bicicletas.push(b2);
-        bicicletas.push(b3);
-        bicicletas.push(b4);
-
-        //Eliminar al frente
-        expect(bicicletas[0]).toBe(b1);
-        bicicletas.splice(0, 1);
-        expect(bicicletas[0]).toBe(b2);
-        expect(bicicletas.length).toBe(3);
-
-        //Eliminar al centro
-        expect(bicicletas[1]).toBe(b3);
-        bicicletas.splice(1, 1);
-        expect(bicicletas[1]).toBe(b4);
-        expect(bicicletas.length).toBe(2);
-
-        //Eliminar al final
-        expect(bicicletas[1]).toBe(b4);
-        bicicletas.splice(1, 1);
-        expect(bicicletas[1]).toBe(undefined);
-        expect(bicicletas.length).toBe(1);
-
-        //Eliminarl ultimo elemento
-        expect(bicicletas[0]).toBe(b2);
-        bicicletas.splice(0, 1);
-        expect(bicicletas[0]).toBe(undefined);
-        expect(bicicletas.length).toBe(0);
+        expect(nuevaInstancia.code).toBe(1);
+        expect(nuevaInstancia.modelo).toBe('modelo');
+        expect(nuevaInstancia.color).toBe('color');
+        expect(nuevaInstancia.ubicacion[0]).toBe(12);
+        expect(nuevaInstancia.ubicacion[1]).toBe(23);
     })
+})
 
-    
+describe('Bicicleta.allBicis', () => {
+    it('Verificar que venga vacia', (done) => {
+        Bicicleta.allBicis( (err, bicis) => {
+            expect(bicis.length).toBe(0);
+            done();
+        });
+    })
+})
 
+describe('Bicicleta.add', () => {
+    it('Agrega una bicicleta', (done) => {
+
+        const newBici = new Bicicleta({code: 1, color: "verde", modelo: "urbana", ubicacion: [3,4]});
+        Bicicleta.add(newBici, (err, newBici) => {
+
+
+            if(err) console.log(err);
+            Bicicleta.allBicis( (err, bicis) => {
+                expect(bicis.length).toBe(1);
+                expect(bicis[0].code).toBe(1);
+                expect(bicis[0].color).toBe('verde');
+                expect(bicis[0].modelo).toBe('urbana');
+                expect(bicis[0].ubicacion[0]).toBe(3);
+                expect(bicis[0].ubicacion[1]).toBe(4);
+                done();
+            })
+
+        })
+    })
+})
+
+describe('Bicicleta.findByCode', () => {
+    it('Agregar una bicicleta', (done) => {
+        let bici1 = new Bicicleta( {code: 1, modelo: 'abc', color: 'def', ubicacion: [3,4]});
+        Bicicleta.add(bici1, (err, bici1) => {
+            let bici2 = new Bicicleta( {code: 2, modelo: 'cba', color: 'fed', ubicacion: [4,3]});
+            Bicicleta.add(bici2, (err, bici1) => {
+                Bicicleta.findByCode(1, (err, bici) => {
+                    expect(bici.code).toBe(1);
+                    expect(bici.modelo).toBe('abc');
+                    expect(bici.color).toBe('def');
+                    expect(bici.ubicacion[0]).toBe(3);
+                    expect(bici.ubicacion[1]).toBe(4);
+                })
+
+                Bicicleta.findByCode(2, (err, bici) => {
+                    expect(bici.code).toBe(2);
+                    expect(bici.modelo).toBe('cba');
+                    expect(bici.color).toBe('fed');
+                    expect(bici.ubicacion[0]).toBe(4);
+                    expect(bici.ubicacion[1]).toBe(3);
+                    done();
+                })
+
+                done();
+            })
+        })
+    })
 })
