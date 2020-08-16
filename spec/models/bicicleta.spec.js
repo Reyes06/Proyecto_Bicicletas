@@ -1,5 +1,5 @@
-const mongoose = require('mongoose');
 let Bicicleta = require('../../models/bicicleta');
+const mongoose = require('mongoose');
 
 beforeAll( (done) => {
     mongoose.connect('mongodb://localhost/red_bicicletas', {useNewUrlParser: true, useUnifiedTopology: true});

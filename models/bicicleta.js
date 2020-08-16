@@ -25,6 +25,10 @@ schemaBicicleta.statics.removeByCode = async function (codigo) {
     return await this.deleteOne({code: codigo}, (err) => {if(err) console.log(err)});
 }
 
+schemaBicicleta.statics.updateByCode = async function (codigo, modelo, color, ubicacion) {
+    return await this.updateOne({code: codigo}, {modelo: modelo, color: color, ubicacion: ubicacion}, (err) => {if(err)console.log(err)});
+}
+
 schemaBicicleta.statics.createInstance = function (code, modelo, color, ubicacion){
     return new this ({
         code: code,

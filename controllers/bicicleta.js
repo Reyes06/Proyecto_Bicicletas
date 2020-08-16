@@ -1,5 +1,4 @@
 let Bicicleta = require('../models/bicicleta');
-let bicicletas = require('../models/listado_bicicletas');
 
 exports.mostrarBicicletas = (req, res) => {
     res.render('bicicletas/list', {bicis: bicicletas});
@@ -10,7 +9,7 @@ exports.agregarBicicletaGET = (req, res) => {
 }
 
 exports.agregarBicicletaPOST = (req, res) => {
-    bicicletas.push(new Bicicleta(req.body.id, req.body.modelo,req.body.color));
+    bicicletas.push(new Bicicleta(req.body.code, req.body.modelo, req.body.color, req.body.ubicacion));
     console.log(req.body);
     res.redirect('/bicicletas');
 }

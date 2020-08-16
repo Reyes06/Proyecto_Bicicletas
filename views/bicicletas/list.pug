@@ -7,9 +7,11 @@ block content
         th(scope='col') Id
         th(scope='col') Modelo
         th(scope='col') Color
+        th(scope='col') Ubicacion
     tbody
       each bici in bicis
         tr
-          th(scope='row') #{bici.id}
+          th(scope='row') #{bici.code}
           td  #{bici.modelo}
           td  #{bici.color}
+          td  #{bici.ubicacion}
